@@ -22,13 +22,13 @@ public class FXMLController {
     private URL location;
 
     @FXML
-    private ComboBox<?> boxAnno;
+    private ComboBox<Integer> boxAnno;
 
     @FXML
-    private ComboBox<?> boxMese;
+    private ComboBox<Integer> boxMese;
 
     @FXML
-    private ComboBox<?> boxGiorno;
+    private ComboBox<Integer> boxGiorno;
 
     @FXML
     private Button btnCreaReteCittadina;
@@ -44,11 +44,37 @@ public class FXMLController {
 
     @FXML
     void doCreaReteCittadina(ActionEvent event) {
+    	txtResult.clear();
+    	if(boxAnno.getValue()==null) 
+    		txtResult.appendText("seleziona un anno");
+    	int anno =0;
+    	anno= boxAnno.getValue();
+    	model.creaGrafo(anno);
+    	txtResult.appendText("Numero Vertici "+ model.getVertex().size() +"\nNumero Archi "+model.getEdge()+"\n");
+    	for(Integer i : model.getVertex()) {
+    		for(int z=0;z<model.getVicini(i).size();z++) {
+    			txtResult.appendText(model.getVicini(i).get(z).getVicino()+"    " +model.getVicini(i).get(z).getDistanza()+"\n");
+    		}
+    		txtResult.appendText("\n\n\n");
+    	}
+    	boxMese.getItems().addAll(model.getMonths(anno));
+    	boxGiorno.getItems().addAll(model.getDay(anno, 1));
+    	
 
     }
 
     @FXML
     void doSimula(ActionEvent event) {
+    	int n=0;
+    	try {
+			n= Integer.parseInt(txtN.getText());
+		} catch (NumberFormatException nfe) {
+			txtResult.appendText("inserire un numero intero tra 1 e 10");
+			return;
+		}
+    	
+    	if(n<1 && n>10)
+    		txtResult.appendText("Inserisci un numero compreso tra 1 e 10");
 
     }
 
@@ -66,5 +92,7 @@ public class FXMLController {
 
 	public void setModel(Model model) {
 		this.model = model;
+		boxAnno.getItems().addAll(model.getAnni());
+		txtResult.setEditable(false);
 	}
 }
